@@ -28,6 +28,10 @@ final class ScoreboardCommand extends PracticeCommand {
         assert($sender instanceof PPlayer);
         $mode = !$this->getScoreboardHandler()->has($sender);
         $this->getScoreboardHandler()->set($sender, $mode);
+        $scoreboard = $this->getScoreboardHandler()->getScoreboardByLevel($sender->getLevel());
+        if (!is_null($scoreboard)) {
+            $this->getScoreboardHandler()->sendScoreboard($sender, $scoreboard);
+        }
         $message = $mode
             ? "§aVous venez d'activer le scoreboard !"
             : "§cVous venez de désactiver le scoreboard !";
