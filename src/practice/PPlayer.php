@@ -372,7 +372,7 @@ final class PPlayer extends Player {
      * @param float $z
      * @param float $base
      * @return void
-     * @noinspection PhpUnusedLocalVariableInspection
+     * @noinspection ALL
      */
     public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4): void {
         $ffa = $this->getFfaHandler()->getFfaByLevel($attacker->getLevel());
@@ -391,11 +391,11 @@ final class PPlayer extends Player {
             $motion->x /= 2;
             $motion->y /= 2;
             $motion->z /= 2;
-            $motion->x += ($x * $f * ($kbXZ ?? $base)) * 0.98;
+            $motion->x += ($x * $f * ($kbXZ ?? $base));
             $motion->y += $kbY ?? $base;
-            $motion->z += ($z * $f * ($kbXZ ?? $base)) * 0.98;
-            if ($motion->y > $base) {
-                $motion->y = $base;
+            $motion->z += ($z * $f * ($kbXZ ?? $base));
+            if ($motion->y > $kbY) {
+                $motion->y = $kbY;
             }
             $this->setMotion($motion);
         }
