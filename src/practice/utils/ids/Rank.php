@@ -5,7 +5,7 @@ namespace practice\utils\ids;
 interface Rank {
 
     public const PLAYER = 'player';
-    public const STAR = 'star';
+    public const PLUS = '+';
     public const MEDIA = 'media';
     public const STAFF = 'staff';
     public const ADMIN = 'admin';
@@ -13,7 +13,7 @@ interface Rank {
 
     public const ALL = [
         self::PLAYER,
-        self::STAR,
+        self::PLUS,
         self::MEDIA,
         self::STAFF,
         self::ADMIN,

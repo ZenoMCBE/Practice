@@ -96,7 +96,7 @@ final class RanksHandler implements IHandler, Data, DefaultData {
     public function getColorByRank(string $rank): string {
         return match ($rank) {
             Rank::PLAYER => TextFormat::GREEN,
-            Rank::STAR => TextFormat::BLUE,
+            Rank::PLUS => TextFormat::BLUE,
             Rank::MEDIA => "§u",
             Rank::STAFF => TextFormat::YELLOW,
             Rank::ADMIN => TextFormat::GOLD,
