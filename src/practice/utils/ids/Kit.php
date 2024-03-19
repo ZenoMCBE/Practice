@@ -58,12 +58,14 @@ interface Kit {
         "lobby" => self::LOBBY,
         "nodebuff-one-ffa" => self::NODEBUFF,
         "nodebuff-two-ffa" => self::NODEBUFF,
+        "nodebuff-nitro-ffa" => self::NODEBUFF,
         "soupfly-ffa" => self::SOUP
     ];
 
     public const FFA = [
         FFA::NODEBUFF_ONE => self::NODEBUFF,
         FFA::NODEBUFF_TWO => self::NODEBUFF,
+        FFA::NODEBUFF_NITRO => self::NODEBUFF,
         FFA::SOUP => self::SOUP
     ];
 

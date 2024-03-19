@@ -118,7 +118,7 @@ final class PPlayer extends Player {
                 $damagerLevel = $damager->getLevel();
                 $this->getStatisticsHandler()->add($damager, Statistic::KILL);
                 $deathMessage = match ($this->getFfaHandler()->getFfaByLevel($damagerLevel)) {
-                    FFA::NODEBUFF_ONE, FFA::NODEBUFF_TWO => "§a" . $this->getName() . "§2 [§a" . $this->countItem(ItemFactory::get(ItemIds::SPLASH_POTION, 22)) . " POT(S)§2] §7a été tué par §c" . $damager->getName() . " §4[§c" . $damager->countItem(ItemFactory::get(ItemIds::SPLASH_POTION, 22)) . " POT(S)§4] §7!",
+                    FFA::NODEBUFF_ONE, FFA::NODEBUFF_TWO, FFA::NODEBUFF_NITRO => "§a" . $this->getName() . "§2 [§a" . $this->countItem(ItemFactory::get(ItemIds::SPLASH_POTION, 22)) . " POT(S)§2] §7a été tué par §c" . $damager->getName() . " §4[§c" . $damager->countItem(ItemFactory::get(ItemIds::SPLASH_POTION, 22)) . " POT(S)§4] §7!",
                     FFA::SOUP => "§a" . $this->getName() . "§2 [§a" . $this->countItem(ItemFactory::get(ItemIds::SLIME_BALL)) . " SOUP(S)§2] §7a été tué par §c" . $damager->getName() . " §4[§c" . $damager->countItem(ItemFactory::get(ItemIds::SLIME_BALL)) . " SOUP(S)§4] §7!",
                     default => "§a" . $this->getName() . " §7a été tué par §c" . $damager->getName() . " §7!"
                 };

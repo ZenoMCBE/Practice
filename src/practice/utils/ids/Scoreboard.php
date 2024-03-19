@@ -38,6 +38,7 @@ interface Scoreboard {
         "lobby" => self::LOBBY,
         "nodebuff-one-ffa" => self::FFA,
         "nodebuff-two-ffa" => self::FFA,
+        "nodebuff-nitro-ffa" => self::FFA,
         "soupfly-ffa" => self::FFA
     ];
 
