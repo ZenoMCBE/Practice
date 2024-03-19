@@ -11,6 +11,7 @@ use pocketmine\event\entity\{EntityArmorChangeEvent,
     EntityDamageEvent,
     EntityExplodeEvent,
     EntityTeleportEvent,
+    ProjectileHitBlockEvent,
     ProjectileHitEntityEvent,
     ProjectileLaunchEvent};
 use pocketmine\event\Listener;
@@ -18,7 +19,7 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\item\Durable;
 use pocketmine\math\Vector3;
 use practice\handlers\HandlerTrait;
-use practice\{entities\EnderPearlEntity, PPlayer, Practice};
+use practice\{entities\EnderPearlEntity, entities\SplashPotionEntity, PPlayer, Practice};
 use practice\tasks\EnderPearlTask;
 use practice\utils\ids\Cooldown;
 use practice\utils\Utils;
@@ -187,6 +188,27 @@ final class EntityListeners implements Listener {
                     $owningEntity->setEnderPearlTask(Practice::getInstance()->getScheduler()->scheduleRepeatingTask(new EnderPearlTask($owningEntity), 1));
                 } else {
                     $owningEntity->sendTip(Utils::PREFIX . "§r§l§4» §r§cVous êtes en cooldown d'EnderPearl de " . $owningEntity->getCooldown(Cooldown::ENDER_PEARL, true) . " seconde(s). §l§4«");
+                }
+            }
+        }
+    }
+
+    /**
+     * @param ProjectileHitBlockEvent $event
+     * @return void
+     */
+    public function onProjectileHitBlock(ProjectileHitBlockEvent $event): void {
+        $projectile = $event->getEntity();
+        if ($projectile instanceof SplashPotionEntity) {
+            $owningEntity = $projectile->getOwningEntity();
+            if ($owningEntity instanceof PPlayer) {
+                $blockHitLevel = $event->getBlockHit()->getLevel();
+                if (
+                    $blockHitLevel->getFolderName() == "nodebuff-nitro-ffa" &&
+                    $owningEntity->getLevel()->getFolderName() == "nodebuff-nitro-ffa" &&
+                    $owningEntity->isAlive()
+                ) {
+                    $projectile->teleport($owningEntity->getLocation());
                 }
             }
         }
