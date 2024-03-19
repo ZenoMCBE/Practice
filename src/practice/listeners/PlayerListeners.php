@@ -2,6 +2,11 @@
 
 namespace practice\listeners;
 
+use pocketmine\block\Door;
+use pocketmine\block\FenceGate;
+use pocketmine\block\SignPost;
+use pocketmine\block\Trapdoor;
+use pocketmine\block\WallSign;
 use pocketmine\event\Listener;
 use pocketmine\event\player\{PlayerAchievementAwardedEvent,
     PlayerBucketEmptyEvent,
@@ -15,7 +20,7 @@ use pocketmine\event\player\{PlayerAchievementAwardedEvent,
     PlayerJoinEvent,
     PlayerQuitEvent,
     PlayerRespawnEvent};
-use pocketmine\item\{ItemFactory, ItemIds};
+use pocketmine\item\{ItemFactory, ItemIds, Sign};
 use pocketmine\level\Location;
 use pocketmine\permission\Permission;
 use pocketmine\Server;
@@ -138,28 +143,46 @@ final class PlayerListeners implements Listener {
         $player = $event->getPlayer();
         if ($player instanceof PPlayer) {
             $item = $event->getItem();
+            $block = $event->getBlock();
             $action = $event->getAction();
-            if ($action === $event::RIGHT_CLICK_BLOCK || $action === $event::RIGHT_CLICK_AIR) {
-                switch ($item->getId()) {
-                    case ItemIds::COMPASS:
-                        if (!$player->isInCooldown(Cooldown::FORM)) {
-                            $player->sendForm($this->getFfaForms()->getFfaTeleportForm());
-                            $player->addCooldown(Cooldown::FORM, 1);
-                        }
-                        break;
-                    case ItemIds::SLIME_BALL:
+            if (
+                $block instanceof Trapdoor ||
+                $block instanceof FenceGate ||
+                $block instanceof SignPost ||
+                $block instanceof Door
+            ) {
+                if ($action === PlayerInteractEvent::RIGHT_CLICK_BLOCK) {
+                    if (
+                        $player->hasPermission(Permission::DEFAULT_OP) ||
+                        !$player->isCreative()
+                    ) {
                         $event->setCancelled();
-                        if ($player->getHealth() < 18) {
-                            $player->setHealth(min($player->getHealth() + 4, $player->getMaxHealth()));
-                            $player->getInventory()->removeItem(ItemFactory::get(ItemIds::SLIME_BALL));
-                        }
-                        break;
+                    }
                 }
-            } else if ($action === $event::LEFT_CLICK_BLOCK && $item->getId() === ItemIds::SLIME_BALL) {
-                $event->setCancelled();
-                if ($player->getHealth() < 18) {
-                    $player->setHealth(min($player->getHealth() + 4, $player->getMaxHealth()));
-                    $player->getInventory()->removeItem(ItemFactory::get(ItemIds::SLIME_BALL));
+            }
+            if (!$event->isCancelled()) {
+                if ($action === $event::RIGHT_CLICK_BLOCK || $action === $event::RIGHT_CLICK_AIR) {
+                    switch ($item->getId()) {
+                        case ItemIds::COMPASS:
+                            if (!$player->isInCooldown(Cooldown::FORM)) {
+                                $player->sendForm($this->getFfaForms()->getFfaTeleportForm());
+                                $player->addCooldown(Cooldown::FORM, 1);
+                            }
+                            break;
+                        case ItemIds::SLIME_BALL:
+                            $event->setCancelled();
+                            if ($player->getHealth() < 18) {
+                                $player->setHealth(min($player->getHealth() + 4, $player->getMaxHealth()));
+                                $player->getInventory()->removeItem(ItemFactory::get(ItemIds::SLIME_BALL));
+                            }
+                            break;
+                    }
+                } else if ($action === $event::LEFT_CLICK_BLOCK && $item->getId() === ItemIds::SLIME_BALL) {
+                    $event->setCancelled();
+                    if ($player->getHealth() < 18) {
+                        $player->setHealth(min($player->getHealth() + 4, $player->getMaxHealth()));
+                        $player->getInventory()->removeItem(ItemFactory::get(ItemIds::SLIME_BALL));
+                    }
                 }
             }
         }
