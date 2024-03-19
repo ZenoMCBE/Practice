@@ -92,7 +92,7 @@ final class SplashPotionEntity extends SplashPotion {
      * @return void
      */
     protected function onHit(ProjectileHitEvent $event): void {
-        $effects=$this->getPotionEffects();
+        $effects = $this->getPotionEffects();
         [$colors, $hasEffects] = count($effects) === 0
             ? [[new Color(0x38, 0x5D, 0xC6)], false]
             : [[new Color(0xF8, 0x24, 0x23)], true];

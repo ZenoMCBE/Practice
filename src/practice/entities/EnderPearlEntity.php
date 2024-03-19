@@ -14,11 +14,22 @@ use practice\PPlayer;
 
 final class EnderPearlEntity extends EnderPearl {
 
-    public const NETWORK_ID=self::ENDER_PEARL;
+    public const NETWORK_ID = self::ENDER_PEARL;
 
-    public $height=0.2;
-    public $width=0.2;
-    protected $gravity=0.1;
+    /**
+     * @var float
+     */
+    public $height = 0.2;
+
+    /**
+     * @var float
+     */
+    public $width = 0.2;
+
+    /**
+     * @var float
+     */
+    protected $gravity = 0.1;
 
     /**
      * @param Level $level
@@ -69,16 +80,16 @@ final class EnderPearlEntity extends EnderPearl {
      */
     public function handleMotion(float $x, float $y, float $z, float $f1, float $f2): void {
         $random = new Random();
-        $f=sqrt($x * $x + $y * $y + $z * $z);
+        $f = sqrt($x * $x + $y * $y + $z * $z);
         $x = $x / $f;
-        $y =$y / $f;
-        $z=$z / $f;
-        $x=$x + $random->nextSignedFloat() * 0.007499999832361937 * $f2;
-        $y=$y + $random->nextSignedFloat() * 0.008599999832361937 * $f2;
-        $z=$z + $random->nextSignedFloat() * 0.007499999832361937 * $f2;
-        $x=$x * $f1;
-        $y=$y * $f1;
-        $z=$z * $f1;
+        $y = $y / $f;
+        $z = $z / $f;
+        $x = $x + $random->nextSignedFloat() * 0.007499999832361937 * $f2;
+        $y = $y + $random->nextSignedFloat() * 0.008599999832361937 * $f2;
+        $z = $z + $random->nextSignedFloat() * 0.007499999832361937 * $f2;
+        $x = $x * $f1;
+        $y = $y * $f1;
+        $z = $z * $f1;
         $this->motion->x += $x;
         $this->motion->y += $y * 1.40;
         $this->motion->z += $z;
