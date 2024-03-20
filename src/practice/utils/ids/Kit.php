@@ -17,7 +17,8 @@ interface Kit {
         self::LOBBY => [
             "armor" => [],
             "item" => [
-                4 => [ItemIds::COMPASS, 0, "§r§l§q» §r§aFFA §l§q«\n§r§8(§7Clique-droit !§8)", 1, null, null]
+                4 => [ItemIds::COMPASS, 0, "§r§l§q» §r§aFFA §l§q«\n§r§8(§7Clique-droit !§8)", 1, null, null],
+                8 => [ItemIds::HEART_OF_THE_SEA, 0, "§r§l§q» §r§aParamètres §l§q«\n§r§8(§7Clique-droit !§8)", 1, null, null]
             ],
             "effect" => []
         ],

@@ -5,6 +5,7 @@ namespace practice;
 use pocketmine\level\Position;
 use pocketmine\{entity\Attribute,
     entity\Effect,
+    entity\EffectInstance,
     entity\Entity,
     event\entity\EntityDamageByEntityEvent,
     event\player\PlayerDeathEvent,
@@ -17,7 +18,7 @@ use pocketmine\{entity\Attribute,
     scheduler\TaskHandler,
     Server};
 use practice\handlers\HandlerTrait;
-use practice\utils\ids\{FFA, Kit, Scoreboard, Statistic};
+use practice\utils\ids\{FFA, Kit, Scoreboard, Setting, Statistic};
 use practice\utils\Utils;
 
 final class PPlayer extends Player {
@@ -61,6 +62,11 @@ final class PPlayer extends Player {
      * @var bool
      */
     private bool $canTeleport = true;
+
+    /**
+     * @var string|null
+     */
+    private ?string $lastLevel = null;
 
     /**
      * @var array
@@ -109,7 +115,7 @@ final class PPlayer extends Player {
     public function onCustomDeath(PlayerDeathEvent $event): void {
         $event->setDrops([]);
         $event->setXpDropAmount(0);
-        Utils::doLightning($this);
+        $this->setLastLevel($this->getLevel()->getFolderName());
         $this->getStatisticsHandler()->add($this, Statistic::DEATH);
         $lastDamageCause = $this->getLastDamageCause();
         if ($lastDamageCause instanceof EntityDamageByEntityEvent) {
@@ -134,8 +140,30 @@ final class PPlayer extends Player {
                     $player->getEnderPearlTask()?->cancel();
                     $player->setEnderPearlTask(null);
                 }
+                if ($this->getSettingsHandler()->has($damager, Setting::LIGHTNING_KILL)) {
+                    Utils::doLightning($this, $damager);
+                }
             } else {
                 $event->setDeathMessage(Utils::PREFIX . "§a" . $this->getName() . " §7est mort !");
+            }
+        }
+    }
+
+    /**
+     * @param bool $update
+     * @return void
+     */
+    public function givePreferences(bool $update = false): void {
+        $this->setGamemode(GameMode::SURVIVAL);
+        if ($this->getSettingsHandler()->has($this, Setting::NIGHT_VISION)) {
+            $this->addEffect(new EffectInstance(Effect::getEffect(Effect::NIGHT_VISION), 60*60*60*60, 1, false));
+        } else {
+            $this->removeEffect(Effect::NIGHT_VISION);
+        }
+        if ($update) {
+            $scoreboard = $this->getScoreboardHandler()->getScoreboardByLevel($this->getLevel());
+            if (!is_null($scoreboard)) {
+                $this->getScoreboardHandler()->sendScoreboard($this, $scoreboard);
             }
         }
     }
@@ -252,6 +280,26 @@ final class PPlayer extends Player {
         $this->setOpponent($opponent);
         $status = !is_null($combatTime) ? self::STATUS_IN_FIGHT : self::STATUS_IDLING;
         $this->setStatus($status);
+        $this->updateHidingNonOpponents();
+    }
+
+    /**
+     * @return void
+     */
+    public function updateHidingNonOpponents(): void {
+        if ($this->getSettingsHandler()->has($this, Setting::HIDE_NON_OPPONENT)) {
+            if ($this->isInCombat()) {
+                foreach ($this->getLevel()->getPlayers() as $player) {
+                    if ($player->getId() !== $this->getOpponent()?->getId()) {
+                        $this->hidePlayer($player);
+                    }
+                }
+            } else {
+                foreach ($this->getLevel()->getPlayers() as $player) {
+                    $this->showPlayer($player);
+                }
+            }
+        }
     }
 
     /**
@@ -341,6 +389,21 @@ final class PPlayer extends Player {
      */
     public function setCanTeleport(bool $canTeleport): void {
         $this->canTeleport = $canTeleport;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLastLevel(): ?string {
+        return $this->lastLevel;
+    }
+
+    /**
+     * @param string|null $lastLevelDeath
+     * @return void
+     */
+    public function setLastLevel(?string $lastLevelDeath): void {
+        $this->lastLevel = $lastLevelDeath;
     }
 
     /**

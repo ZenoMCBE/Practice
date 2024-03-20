@@ -8,6 +8,7 @@ use practice\handlers\childs\KitsHandler;
 use practice\handlers\childs\ProvidersHandler;
 use practice\handlers\childs\RanksHandler;
 use practice\handlers\childs\ScoreboardHandler;
+use practice\handlers\childs\SettingsHandler;
 use practice\handlers\childs\StatisticsHandler;
 use practice\PPlayer;
 
@@ -49,6 +50,13 @@ trait HandlerTrait {
     }
 
     /**
+     * @return SettingsHandler
+     */
+    public function getSettingsHandler(): SettingsHandler {
+        return SettingsHandler::getInstance();
+    }
+
+    /**
      * @return StatisticsHandler
      */
     public function getStatisticsHandler(): StatisticsHandler {
@@ -61,7 +69,7 @@ trait HandlerTrait {
      */
     final public function initializeData(PPlayer $player): void {
         $this->getRanksHandler()->setDefaultData($player);
-        $this->getScoreboardHandler()->setDefaultData($player);
+        $this->getSettingsHandler()->setDefaultData($player);
         $this->getStatisticsHandler()->setDefaultData($player);
     }
 

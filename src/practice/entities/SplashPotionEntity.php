@@ -10,6 +10,7 @@ use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\{LevelEventPacket, LevelSoundEventPacket};
 use pocketmine\utils\{Color, Random};
+use pocketmine\Server;
 use practice\PPlayer;
 
 final class SplashPotionEntity extends SplashPotion {
@@ -96,8 +97,21 @@ final class SplashPotionEntity extends SplashPotion {
         [$colors, $hasEffects] = count($effects) === 0
             ? [[new Color(0x38, 0x5D, 0xC6)], false]
             : [[new Color(0xF8, 0x24, 0x23)], true];
-        $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_SPLASH, Color::mix(...$colors)->toARGB());
-        $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_GLASS);
+        $owningEntity = $this->getOwningEntity();
+        if ($owningEntity instanceof PPlayer) {
+            $levelEventPacket = new LevelEventPacket();
+            $levelEventPacket->evid = LevelEventPacket::EVENT_PARTICLE_SPLASH;
+            $levelEventPacket->data = Color::mix(...$colors)->toARGB();
+            $levelEventPacket->position = $this->getPosition()->asVector3();
+            $levelSoundEventPacket = new LevelSoundEventPacket();
+            $levelSoundEventPacket->sound = LevelSoundEventPacket::SOUND_GLASS;
+            $levelSoundEventPacket->position = $this->getPosition()->asVector3();
+            $opponent = $owningEntity->getOpponent();
+            $players = $opponent instanceof PPlayer ? [$owningEntity, $opponent] : [$owningEntity];
+            foreach ([$levelEventPacket, $levelSoundEventPacket] as $packet) {
+                Server::getInstance()->broadcastPacket($players, $packet);
+            }
+        }
         if ($hasEffects) {
             foreach ($this->getLevel()->getNearbyEntities($this->getBoundingBox()->expand(1.7, 5.7, 1.7)) as $nearby) {
                 if ($nearby instanceof PPlayer && $nearby->isAlive()) {

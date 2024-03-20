@@ -2,7 +2,7 @@
 
 namespace practice\forms;
 
-use practice\forms\childs\FfaForms;
+use practice\forms\childs\{FfaForms, SettingsForms};
 
 trait FormTrait {
 
@@ -11,6 +11,13 @@ trait FormTrait {
      */
     public function getFfaForms(): FfaForms {
         return FfaForms::getInstance();
+    }
+
+    /**
+     * @return SettingsForms
+     */
+    public function getSettingsForms(): SettingsForms {
+        return SettingsForms::getInstance();
     }
 
 }

@@ -56,13 +56,21 @@ final class FfaHandler implements IHandler, Data {
     /**
      * @param PPlayer $player
      * @param string $ffa
+     * @param bool $respawn
      * @return void
      */
-    public function teleport(PPlayer $player, string $ffa): void {
+    public function teleport(PPlayer $player, string $ffa, bool $respawn = false): void {
         $player->teleport($this->findRandomPosition($ffa));
-        $player->sendMessage("§l§4» §r§cDISCLAIMER §l§4«");
-        $player->sendMessage("§l§4| §r§7Les knockbacks ne sont pas définitifs, ils sont susceptibles de changer n'importe quand !");
-        $player->sendMessage("§l§4| §r§7N'hésitez pas à donner vos suggestions à §cMyma§7, §cDarkly§7, §cMesdame §7ou d'autres staffs !");
+        if (!$respawn) {
+            $player->sendMessage("§l§4» §r§cDISCLAIMER §l§4«");
+            $player->sendMessage("§l§4| §r§7Les knockbacks ne sont pas définitifs, ils sont susceptibles de changer n'importe quand !");
+            $player->sendMessage("§l§4| §r§7N'hésitez pas à donner vos suggestions à §cMyma§7, §cDarkly§7, §cMesdame §7ou d'autres staffs !");
+        }
+        $level = $this->getLevelByFfa($ffa);
+        foreach ($level->getPlayers() as $levelPlayer) {
+            assert($levelPlayer instanceof PPlayer);
+            $levelPlayer->updateHidingNonOpponents();
+        }
     }
 
     /**

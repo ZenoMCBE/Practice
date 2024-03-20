@@ -2,29 +2,19 @@
 
 namespace practice\handlers\childs;
 
-use pocketmine\inventory\FurnaceInventory;
 use pocketmine\level\Level;
-use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
-use pocketmine\network\mcpe\protocol\SetDisplayObjectivePacket;
-use pocketmine\network\mcpe\protocol\SetScorePacket;
+use pocketmine\network\mcpe\protocol\{RemoveObjectivePacket, SetDisplayObjectivePacket, SetScorePacket};
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
-use practice\datas\Data;
-use practice\datas\DefaultData;
-use practice\handlers\HandlerTrait;
-use practice\handlers\IHandler;
+use practice\datas\NoProviderData;
+use practice\handlers\{HandlerTrait, IHandler};
 use practice\PPlayer;
-use practice\utils\ids\Scoreboard;
-use practice\utils\ids\Statistic;
+use practice\utils\ids\{Scoreboard, Setting, Statistic};
 
-final class ScoreboardHandler implements IHandler, Data, DefaultData {
+final class ScoreboardHandler implements IHandler, NoProviderData {
 
     use HandlerTrait, SingletonTrait;
-
-    public const SEPARATOR = "\u{E000}";
-
-    private const MINI_SEPARATOR = "\u{E141}";
 
     public const GLYPH_PER_LETTER = [
         'a' => "\u{E10D}",
@@ -56,11 +46,6 @@ final class ScoreboardHandler implements IHandler, Data, DefaultData {
     ];
 
     /**
-     * @var array
-     */
-    private array $cache = [];
-
-    /**
      * @return string
      */
     public function getName(): string {
@@ -70,75 +55,7 @@ final class ScoreboardHandler implements IHandler, Data, DefaultData {
     /**
      * @return void
      */
-    public function onEnable(): void {
-        $this->loadCache();
-    }
-
-    /**
-     * @return void
-     */
-    public function loadCache(): void {
-        $this->cache = $this->getProvider($this)?->getAll();
-    }
-
-    /**
-     * @return array
-     */
-    public function getCache(): array {
-        return $this->cache;
-    }
-
-    /**
-     * @param PPlayer $player
-     * @return bool
-     */
-    public function exist(PPlayer $player): bool {
-        return array_key_exists($player->getUpperName(), $this->getCache());
-    }
-
-    /**
-     * @param PPlayer $player
-     * @return bool
-     */
-    public function has(PPlayer $player): bool {
-        return $this->get($player);
-    }
-
-    /**
-     * @param PPlayer $player
-     * @return bool
-     */
-    public function get(PPlayer $player): bool {
-        return $this->cache[$player->getUpperName()] ?? $this->getDefaultData();
-    }
-
-    /**
-     * @param PPlayer $player
-     * @param bool $state
-     * @return void
-     */
-    public function set(PPlayer $player, bool $state): void {
-        if ($this->exist($player)) {
-            $this->cache[$player->getUpperName()] = $state;
-        }
-    }
-
-    /**
-     * @param PPlayer $player
-     * @return void
-     */
-    public function setDefaultData(PPlayer $player): void {
-        if (!$this->exist($player)) {
-            $this->cache[$player->getUpperName()] = $this->getDefaultData();
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    public function getDefaultData(): bool {
-        return true;
-    }
+    public function onEnable(): void {}
 
     /**
      * @param PPlayer $player
@@ -148,7 +65,7 @@ final class ScoreboardHandler implements IHandler, Data, DefaultData {
      */
     public function sendScoreboard(PPlayer $player, string $scoreboard, bool $update = false): void {
         $player->setScoreboard($scoreboard);
-        if ($this->has($player)) {
+        if ($this->getSettingsHandler()->has($player, Setting::SCOREBOARD)) {
             if ($update) {
                 $this->removeScoreboard($player);
             }
@@ -332,7 +249,7 @@ final class ScoreboardHandler implements IHandler, Data, DefaultData {
      * @param string $word
      * @return string
      */
-    public function formatWordToGlyph(string $word): string {
+    private function formatWordToGlyph(string $word): string {
         return implode('', array_map(fn (string $letter) => $this->getGlyphByLetter($letter), str_split($word)));
     }
 
@@ -347,17 +264,6 @@ final class ScoreboardHandler implements IHandler, Data, DefaultData {
     /**
      * @return void
      */
-    public function unloadCache(): void {
-        $provider = $this->getProvider($this);
-        $provider?->setAll($this->getCache());
-        $provider?->save();
-    }
-
-    /**
-     * @return void
-     */
-    public function onDisable(): void {
-        $this->unloadCache();
-    }
+    public function onDisable(): void {}
 
 }

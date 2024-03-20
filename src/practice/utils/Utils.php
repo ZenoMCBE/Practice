@@ -9,8 +9,11 @@ use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\Player;
 use pocketmine\Server;
+use practice\handlers\childs\SettingsHandler;
+use practice\handlers\HandlerTrait;
 use practice\PPlayer;
 use practice\Practice;
+use practice\utils\ids\Setting;
 
 final class Utils {
 
@@ -78,9 +81,10 @@ final class Utils {
 
     /**
      * @param PPlayer $player
+     * @param PPlayer $damager
      * @return void
      */
-    public static function doLightning(PPlayer $player): void {
+    public static function doLightning(PPlayer $player, PPlayer $damager): void {
         $entityId = Entity::$entityCount++;
         $position = $player->getPosition();
         $level = $player->getLevel();
@@ -93,7 +97,7 @@ final class Utils {
         $light->yaw = $player->getYaw();
         $light->pitch = $player->getPitch();
         $light->position = new Vector3($position->getX(), $position->getY(), $position->getZ());
-        Server::getInstance()->broadcastPacket($level->getPlayers(), $light);
+        Server::getInstance()->broadcastPacket([$damager], $light);
 
         $block = $level->getBlock($position->floor()->down());
         $particle = new DestroyBlockParticle($position, $block);
@@ -106,7 +110,7 @@ final class Utils {
         $sound->z = $position->getZ();
         $sound->volume = 1;
         $sound->pitch = 1;
-        Server::getInstance()->broadcastPacket($level->getPlayers(), $sound);
+        Server::getInstance()->broadcastPacket([$damager], $sound);
     }
 
 }

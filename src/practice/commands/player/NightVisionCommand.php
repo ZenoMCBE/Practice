@@ -3,13 +3,16 @@
 namespace practice\commands\player;
 
 use pocketmine\command\CommandSender;
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
+use pocketmine\entity\{Effect, EffectInstance};
 use practice\commands\PracticeCommand;
+use practice\handlers\HandlerTrait;
 use practice\PPlayer;
+use practice\utils\ids\Setting;
 use practice\utils\Utils;
 
 final class NightVisionCommand extends PracticeCommand {
+
+    use HandlerTrait;
 
     /**
      * CONSTRUCT
@@ -25,7 +28,8 @@ final class NightVisionCommand extends PracticeCommand {
      */
     public function onRun(CommandSender $sender, array $args): void {
         assert($sender instanceof PPlayer);
-        $mode = !$sender->hasEffect(Effect::NIGHT_VISION);
+        $mode = !$this->getSettingsHandler()->has($sender, Setting::NIGHT_VISION);
+        $this->getSettingsHandler()->set($sender, Setting::NIGHT_VISION, $mode);
         if ($mode) {
             $sender->addEffect(new EffectInstance(Effect::getEffect(Effect::NIGHT_VISION), 60*60*60*60, 1, false));
             $sender->sendMessage(Utils::PREFIX . "§aVous venez d'activer la vision nocturne !");

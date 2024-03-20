@@ -6,8 +6,9 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\Level;
-use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\Server;
 use pocketmine\utils\Random;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use practice\PPlayer;
@@ -59,13 +60,19 @@ final class EnderPearlEntity extends EnderPearl {
     protected function onHit(ProjectileHitEvent $event):void{
         $owner = $this->getOwningEntity();
         if ($owner instanceof PPlayer) {
-            $this->getLevel()->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT);
-            $this->getLevel()->addSound(new EndermanTeleportSound($owner));
+            $levelEvent = new LevelEventPacket();
+            $levelEvent->evid = LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT;
+            $levelEvent->position = $this->getPosition()->asVector3();
+            $levelEvent->data = 0;
+            Server::getInstance()->broadcastPacket([$owner], $levelEvent);
             if ($owner->canTeleport()) {
                 $owner->teleport($event->getRayTraceResult()->getHitVector());
                 $owner->setCanTeleport(false);
             }
-            $this->getLevel()->addSound(new EndermanTeleportSound($owner));
+            $levelSoundEvent = new LevelSoundEventPacket();
+            $levelSoundEvent->sound = LevelEventPacket::EVENT_SOUND_ENDERMAN_TELEPORT;
+            $levelSoundEvent->position = $this->getPosition();
+            $owner->handleLevelSoundEvent($levelSoundEvent);
         }
     }
 

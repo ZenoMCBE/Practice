@@ -21,14 +21,18 @@ use pocketmine\event\player\{PlayerAchievementAwardedEvent,
     PlayerQuitEvent,
     PlayerRespawnEvent};
 use pocketmine\item\{ItemFactory, ItemIds, Sign};
+use pocketmine\level\Level;
 use pocketmine\level\Location;
 use pocketmine\permission\Permission;
+use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
 use practice\forms\FormTrait;
 use practice\handlers\HandlerTrait;
 use practice\PPlayer;
+use practice\Practice;
 use practice\utils\ids\Cooldown;
 use practice\utils\ids\Scoreboard;
+use practice\utils\ids\Setting;
 
 final class PlayerListeners implements Listener {
 
@@ -81,8 +85,23 @@ final class PlayerListeners implements Listener {
     public function onRespawn(PlayerRespawnEvent $event): void {
         $player = $event->getPlayer();
         if ($player instanceof PPlayer) {
-            $event->setRespawnPosition(new Location(-192.5, 29, 191.5, 180, 0, Server::getInstance()->getLevelByName("lobby")));
-            $player->teleportToLobby();
+            $respawnLocation = new Location(-192.5, 29, 191.5, 180, 0, Server::getInstance()->getLevelByName("lobby"));
+            if ($this->getSettingsHandler()->has($player, Setting::IMMEDIATE_RESPAWN)) {
+                $lastLevelName = $player->getLastLevel();
+                $level = !is_null($lastLevelName) ? Server::getInstance()->getLevelByName($lastLevelName) : null;
+                if ($level instanceof Level) {
+                    Practice::getInstance()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($player, $level): void {
+                        $this->getFfaHandler()->teleport($player, $this->getFfaHandler()->getFfaByLevel($level), true);
+                    }), 1);
+                } else {
+                    $event->setRespawnPosition($respawnLocation);
+                    $player->teleportToLobby();
+                }
+            } else {
+                $event->setRespawnPosition($respawnLocation);
+                $player->teleportToLobby();
+            }
+            $player->givePreferences();
         }
     }
 
@@ -164,9 +183,17 @@ final class PlayerListeners implements Listener {
                 if ($action === $event::RIGHT_CLICK_BLOCK || $action === $event::RIGHT_CLICK_AIR) {
                     switch ($item->getId()) {
                         case ItemIds::COMPASS:
+                        case ItemIds::HEART_OF_THE_SEA:
                             if (!$player->isInCooldown(Cooldown::FORM)) {
-                                $player->sendForm($this->getFfaForms()->getFfaTeleportForm());
-                                $player->addCooldown(Cooldown::FORM, 1);
+                                $form = match ($item->getId()) {
+                                    ItemIds::COMPASS => $this->getFfaForms()->getFfaTeleportForm(),
+                                    ItemIds::HEART_OF_THE_SEA => $this->getSettingsForms()->getForm($player),
+                                    default => null
+                                };
+                                if (!is_null($form)) {
+                                    $player->sendForm($form);
+                                    $player->addCooldown(Cooldown::FORM, 1);
+                                }
                             }
                             break;
                         case ItemIds::SLIME_BALL:

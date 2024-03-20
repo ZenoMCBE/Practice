@@ -7,6 +7,7 @@ use practice\handlers\{childs\FfaHandler,
     childs\KitsHandler,
     childs\RanksHandler,
     childs\ScoreboardHandler,
+    childs\SettingsHandler,
     childs\StatisticsHandler,
     HandlerTrait,
     IHandler};
@@ -27,6 +28,7 @@ final class HandlersLoader implements ILoader {
             KitsHandler::getInstance(),
             RanksHandler::getInstance(),
             ScoreboardHandler::getInstance(),
+            SettingsHandler::getInstance(),
             StatisticsHandler::getInstance()
         ];
         foreach ($handlers as $handler) {
@@ -52,6 +54,7 @@ final class HandlersLoader implements ILoader {
             KitsHandler::getInstance(),
             RanksHandler::getInstance(),
             ScoreboardHandler::getInstance(),
+            SettingsHandler::getInstance(),
             StatisticsHandler::getInstance()
         ];
         foreach ($handlers as $handler) {
