@@ -13,7 +13,9 @@ use pocketmine\event\inventory\{CraftItemEvent,
 use pocketmine\event\Listener;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\ChestInventory;
+use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\permission\Permission;
 use practice\PPlayer;
 
 final class InventoryListeners implements Listener {
@@ -67,7 +69,7 @@ final class InventoryListeners implements Listener {
             foreach ($transaction->getInventories() as $inventory) {
                 if (!$inventory instanceof ArmorInventory) {
                     foreach ($transaction->getActions() as $action) {
-                        if (!$action instanceof SlotChangeAction) {
+                        if (!$action instanceof SlotChangeAction && !$source->hasPermission(Permission::DEFAULT_OP)) {
                             $event->setCancelled();
                         }
                     }
