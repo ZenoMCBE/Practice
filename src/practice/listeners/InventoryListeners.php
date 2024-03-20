@@ -6,11 +6,13 @@ use pocketmine\event\inventory\{CraftItemEvent,
     FurnaceBurnEvent,
     FurnaceCookEvent,
     FurnaceSmeltEvent,
+    InventoryOpenEvent,
     InventoryPickupArrowEvent,
     InventoryPickupItemEvent,
     InventoryTransactionEvent};
 use pocketmine\event\Listener;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use practice\PPlayer;
 
@@ -38,6 +40,20 @@ final class InventoryListeners implements Listener {
      */
     public function onPickupItem(InventoryPickupItemEvent $event): void {
         $event->setCancelled();
+    }
+
+    /**
+     * @param InventoryOpenEvent $event
+     * @return void
+     */
+    public function onOpen(InventoryOpenEvent $event): void {
+        $player = $event->getPlayer();
+        if ($player instanceof PPlayer) {
+            $inventory = $event->getInventory();
+            if ($inventory instanceof ChestInventory) {
+                $event->setCancelled();
+            }
+        }
     }
 
     /**
