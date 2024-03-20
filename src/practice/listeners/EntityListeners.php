@@ -108,8 +108,8 @@ final class EntityListeners implements Listener {
                     [$xz, $y, $hitDelay, $heightLimit] = $this->getFfaHandler()->getKnockback($ffa);
                     $event->setKnockBack($xz);
                     $event->setAttackCooldown($hitDelay);
-                    $entity->setCombatTime($damager, 30, false);
-                    $damager->setCombatTime($entity, 30, false);
+                    $entity->setCombatTime($damager, 20, false);
+                    $damager->setCombatTime($entity, 20, false);
                 }
             } else {
                 $event->setCancelled();
