@@ -229,7 +229,7 @@ final class EntityListeners implements Listener {
                     [$entityLocation, $projectileLocation] = [$entityHit->getLocation(), $projectile->getLocation()];
                     $deltaX = $entityLocation->getX() - $projectileLocation->getX();
                     $deltaZ = $entityLocation->getZ() - $projectileLocation->getZ();
-                    $entityHit->setMotion((new Vector3($deltaX, 0.28, $deltaZ))->subtract($deltaX / 4, 0, $deltaZ / 4));
+                    $entityHit->setMotion((new Vector3($deltaX, 0.2575, $deltaZ))->subtract($deltaX / 4, 0, $deltaZ / 4));
                 }
                 $owningEntity->teleport($hitVector);
             }
