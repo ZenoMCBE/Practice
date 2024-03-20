@@ -172,7 +172,7 @@ final class PlayerListeners implements Listener {
             ) {
                 if ($action === PlayerInteractEvent::RIGHT_CLICK_BLOCK) {
                     if (
-                        $player->hasPermission(Permission::DEFAULT_OP) ||
+                        !$player->hasPermission(Permission::DEFAULT_OP) ||
                         !$player->isCreative()
                     ) {
                         $event->setCancelled();
