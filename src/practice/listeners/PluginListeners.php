@@ -31,7 +31,7 @@ final class PluginListeners implements Listener {
         if ($event->getPlugin()->getName() == Practice::getInstance()->getName()) {
             $this->unloadAll();
             foreach (Server::getInstance()->getOnlinePlayers() as $onlinePlayer) {
-                $onlinePlayer->kick("§cRedémarrage");
+                $onlinePlayer->transfer("zenoranked.eu");
             }
         }
     }
