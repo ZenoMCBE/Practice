@@ -60,7 +60,7 @@ final class RanksHandler implements IHandler, Data, DefaultData {
      * @return string
      */
     public function get(PPlayer|string $player): string {
-        $playerName = Utils::getPlayerName($player);
+        $playerName = Utils::getPlayerName($player, true);
         return $this->cache[$playerName] ?? $this->getDefaultData();
     }
 
