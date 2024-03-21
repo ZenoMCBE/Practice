@@ -3,7 +3,8 @@
 namespace practice\loaders\childs;
 
 use pocketmine\command\Command;
-use practice\commands\player\{NightVisionCommand,
+use practice\commands\player\{LobbyCommand,
+    NightVisionCommand,
     PingCommand,
     RekitCommand,
     ScoreboardCommand,
@@ -37,6 +38,7 @@ final class CommandsLoader implements ILoader {
             new BuildCommand(),
             new EntitiesCommand(),
             new ExactCoordsCommand(),
+            new LobbyCommand(),
             new KnockbackCommand(),
             new NightVisionCommand(),
             new PingCommand(),
