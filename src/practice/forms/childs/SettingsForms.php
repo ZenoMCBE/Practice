@@ -58,7 +58,7 @@ final class SettingsForms {
             $player->givePreferences(true);
         };
         $onClose = function (Player $player): void {
-            $player->sendMessage("§l§4» §r§cNOTE §l§4«");#
+            $player->sendMessage("§l§4» §r§cNOTE §l§4«");
             $player->sendMessage("§l§4| §r§7Vous devez confirmer vos changements de paramètres pour qu'ils soient effectifs !");
         };
         return new PracticeCustomForm("§r§l§q» §r§aParamètres §l§q«", $toggles, $onSubmit, $onClose);
