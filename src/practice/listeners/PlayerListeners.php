@@ -12,6 +12,7 @@ use pocketmine\event\player\{PlayerAchievementAwardedEvent,
     PlayerBucketEmptyEvent,
     PlayerBucketFillEvent,
     PlayerChatEvent,
+    PlayerCommandPreprocessEvent,
     PlayerCreationEvent,
     PlayerDeathEvent,
     PlayerDropItemEvent,
@@ -33,6 +34,7 @@ use practice\Practice;
 use practice\utils\ids\Cooldown;
 use practice\utils\ids\Scoreboard;
 use practice\utils\ids\Setting;
+use practice\utils\Utils;
 
 final class PlayerListeners implements Listener {
 
@@ -211,6 +213,26 @@ final class PlayerListeners implements Listener {
                         $player->getInventory()->removeItem(ItemFactory::get(ItemIds::SLIME_BALL));
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * @param PlayerCommandPreprocessEvent $event
+     * @return void
+     */
+    public function onCommandPreprocess(PlayerCommandPreprocessEvent $event): void {
+        $player = $event->getPlayer();
+        if ($player instanceof PPlayer) {
+            $message = $event->getMessage();
+            $firstChar = substr($message, 0, 1);
+            $whitespaceCheck = substr($message, 1, 1);
+            $msgParts = explode(' ', trim($message));
+            $slashCheck = substr(end($msgParts), -1, 1);
+            $quoteMarkCheck = substr($message, 1, 1) . substr($message, -1, 1);
+            if ($firstChar === '/' && ($whitespaceCheck === ' ' || $whitespaceCheck === '\\' || $slashCheck === '\\' || $quoteMarkCheck === '""')) {
+                $player->sendMessage(Utils::PREFIX . "§cVous n'avez pas le droit d'utiliser des exploitations pour bypass la sécurité des commandes.");
+                $event->setCancelled();
             }
         }
     }
