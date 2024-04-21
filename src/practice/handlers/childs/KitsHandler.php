@@ -5,6 +5,7 @@ namespace practice\handlers\childs;
 use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\item\Armor;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\ItemFactory;
@@ -57,6 +58,9 @@ final class KitsHandler implements IHandler, NoProviderData {
             $item = ItemFactory::get($id, $meta, $count)->setCustomName($name ?? "");
             if (!is_null($enchantment) && !is_null($level)) {
                 $item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment($enchantment), $level));
+            }
+            if ($item instanceof Durable) {
+                $item->setUnbreakable();
             }
             if ($id === ItemIds::SPLASH_POTION) {
                 $player->getInventory()->addItem($item); // fuck PM3 pk ça stack les potions ?
